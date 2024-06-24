@@ -80,35 +80,26 @@ pub fn process(input: &str) -> String {
         });
     }
 
+    let mut counts = HashMap::new();
     let mut infinite = HashSet::new();
+
     (0..vec_max_0).for_each(|x| {
         for y in 0..vec_max_1 {
-            if x == 0 || x == vec_max_0 - 1 || y == 0 || y == vec_max_1 - 1 {
-                #[allow(clippy::match_on_vec_items)]
-                match cells[x][y] {
-                    Cell::None => unreachable!(), // All cells were updated in previous loop
-                    Cell::One { distance: _, num } => {
+            #[allow(clippy::match_on_vec_items)]
+            match cells[x][y] {
+                Cell::None => unreachable!(), // All cells were updated in previous loop
+                Cell::One { distance: _, num } => {
+                    if x == 0 || x == vec_max_0 - 1 || y == 0 || y == vec_max_1 - 1 {
                         infinite.insert(num);
+                        counts.remove(&num);
+                    } else if !infinite.contains(&num) {
+                        counts.entry(num).and_modify(|count| *count += 1).or_insert(1_usize);
                     }
-                    Cell::Tie(_) => {} // We're doing nothing here because tie doesnt store the
-                                       // index of the source coords, we'll adjust this if it
-                                       // causes issues
                 }
+                Cell::Tie(_) => {} // We're doing nothing here because tie doesnt store the
+                                   // index of the source coords, we'll adjust this if it
+                                   // causes issues
             }
-        }
-    });
-
-    let mut counts = HashMap::new();
-
-    cells.iter().flatten().for_each(|cell| {
-        match cell {
-            Cell::None => unreachable!(), // All cells were updated in a previous loop
-            Cell::One { distance: _, num } => {
-                if !infinite.contains(num) {
-                    counts.entry(num).and_modify(|count| *count += 1).or_insert(1usize);
-                }
-            },
-            Cell::Tie(_) => {},
         }
     });
 
