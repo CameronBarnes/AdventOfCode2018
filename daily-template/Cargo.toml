@@ -15,6 +15,7 @@ nursery = "deny"
 itertools = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
+nom = { workspace = true }
 
 [dev-dependencies]
 criterion = { workspace = true }
